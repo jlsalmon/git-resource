@@ -570,6 +570,20 @@ it_can_check_with_tag_filter() {
   "
 }
 
+it_can_check_with_tag_filter_given_branch_and_ref() {
+  local repo=$(init_repo)
+  local ref1=$(make_commit $repo)
+  local ref2=$(make_commit $repo)
+  local ref3=$(make_annotated_tag $repo "foo" "tag 1")
+  local ref4=$(make_commit $repo)
+  local ref5=$(make_annotated_tag $repo "2.0-staging" "tag 5")
+  local ref6=$(make_commit $repo)
+
+  check_uri_with_tag_filter_given_branch_and_ref $repo "foo" "master" $ref4 | jq -e "
+    . == [{ref: \"foo\", commit: \"$ref2\"}]
+  "
+}
+
 it_can_check_with_tag_filter_with_cursor() {
   local repo=$(init_repo)
   local ref1=$(make_commit $repo)
@@ -771,6 +785,7 @@ run it_can_check_with_submodule_credentials
 run it_clears_netrc_even_after_errors
 run it_can_check_empty_commits
 run it_can_check_with_tag_filter
+run it_can_check_with_tag_filter_given_branch_and_ref
 run it_can_check_with_tag_filter_with_cursor
 run it_can_check_with_tag_filter_over_all_branches
 run it_can_check_with_tag_filter_over_all_branches_with_cursor
